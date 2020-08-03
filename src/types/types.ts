@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 import { Action } from 'redux'
 
 export interface ValidAction<T, E> extends Action {

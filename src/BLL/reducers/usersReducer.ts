@@ -1,8 +1,5 @@
-// eslint-disable-next-line no-unused-vars
 import { ReduxState, User, UsersReducerState, ValidAction } from '../../types/types'
-// eslint-disable-next-line no-unused-vars
 import { ThunkAction } from 'redux-thunk'
-// eslint-disable-next-line no-unused-vars
 import { Action } from 'redux'
 import api from '../../DAL/api/api'
 

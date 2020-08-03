@@ -1,6 +1,4 @@
-// eslint-disable-next-line no-unused-vars
 import axios, { AxiosInstance } from 'axios'
-// eslint-disable-next-line no-unused-vars
 import { User } from '../../types/types'
 const BASE_URL = 'http://www.filltext.com/'
 const SMALL_SET_URL = '?rows=32&id={number|1000}&firstName={firstName}&lastName={lastName}&email={email}&phone={phone|(xxx)xxx-xx-xx}&address={addressObject}&description={lorem|32}'
