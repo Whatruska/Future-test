@@ -23,6 +23,7 @@
         "@typescript-eslint"
     ],
     "rules": {
-        "no-unused-vars": [2, {"vars": "local", "args": "all"}]
+        "no-unused-vars": [2, {"vars": "local", "args": "all"}],
+        "react/prop-types": 0
     }
 }

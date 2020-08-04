@@ -1,6 +1,10 @@
 import { Action } from 'redux'
+export interface SortingMode {
+    key: keyof User,
+    direction: 'UP' | 'DOWN'
+}
 
-export interface ValidAction<T, E> extends Action {
+export interface ValidAction<T, E> extends Action{
     type: T,
     payload?: E
 }
@@ -11,7 +15,7 @@ export interface UsersReducerState {
 }
 
 export interface ReduxState {
-    users: UsersReducerState
+    readonly users: UsersReducerState
 }
 
 interface Address {

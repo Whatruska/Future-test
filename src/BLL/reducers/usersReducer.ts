@@ -1,6 +1,4 @@
-import { ReduxState, User, UsersReducerState, ValidAction } from '../../types/types'
-import { ThunkAction } from 'redux-thunk'
-import { Action } from 'redux'
+import { User, UsersReducerState, ValidAction } from '../../types/types'
 import api from '../../DAL/api/api'
 
 const initialState: UsersReducerState = {
@@ -10,7 +8,6 @@ const initialState: UsersReducerState = {
 
 const TOGGLE_FETCHING = 'USERS/TOGGLE_FETCHING'
 const SET_USERS = 'USERS/SET_USERS'
-
 type ALL_ACTIONS = typeof TOGGLE_FETCHING | typeof SET_USERS
 
 const usersReducer = (state = initialState, action: ValidAction<ALL_ACTIONS, any>): UsersReducerState => {
@@ -38,24 +35,26 @@ const toggleFetching = (): ValidAction<typeof TOGGLE_FETCHING, never> => {
   }
 }
 
-const setAllUsers = (allUsers: Array<User>): ValidAction<typeof TOGGLE_FETCHING, Array<User>> => {
+const setAllUsers = (allUsers: Array<User>): ValidAction<typeof SET_USERS, Array<User>> => {
   return {
-    type: TOGGLE_FETCHING,
+    type: SET_USERS,
     payload: allUsers
   }
 }
 
-const fetchAllUsers = (): ThunkAction<void, ReduxState, unknown, Action<unknown>> => async dispatch => {
-  dispatch(toggleFetching())
-  api.getBigSet()
-    .then(array => {
-      dispatch(toggleFetching())
-      dispatch(setAllUsers(array))
-    })
-    .catch(err => {
-      console.log(err)
-      dispatch(toggleFetching())
-    })
+const fetchAllUsers = (): any => {
+  return (dispatch: any) => {
+    dispatch(toggleFetching())
+    api.getBigSet()
+      .then(array => {
+        dispatch(setAllUsers(array))
+        dispatch(toggleFetching())
+      })
+      .catch(err => {
+        console.log(err)
+        dispatch(toggleFetching())
+      })
+  }
 }
 
 export { usersReducer, fetchAllUsers }
