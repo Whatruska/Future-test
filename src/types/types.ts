@@ -1,4 +1,9 @@
 import { Action } from 'redux'
+export interface FilteringConfig {
+    key: keyof User,
+    substr: string
+}
+
 export interface SortingMode {
     key: keyof User,
     direction: 'UP' | 'DOWN'

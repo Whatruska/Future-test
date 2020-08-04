@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { SortingMode, User } from '../../types/types'
 import { Table } from 'reactstrap'
@@ -33,8 +33,10 @@ const CustomHeading: FunctionComponent<HeadingProps> = ({ setSort, label, sort, 
 }
 
 export const UserTable: FunctionComponent<Props> = ({ currList, sort, setSort }) => {
+  const [selected, setSelected] = useState<User>()
   return (
     <>
+      <>{JSON.stringify(selected)}</>
       <Table striped bordered>
         <thead>
           <tr>
@@ -49,7 +51,9 @@ export const UserTable: FunctionComponent<Props> = ({ currList, sort, setSort })
           {
             currList.map(user => {
               return (
-                <tr key={user.id + user.phone}>
+                <tr key={user.id + user.phone} onClick={() => {
+                  setSelected(user)
+                }}>
                   <th scope="row">{user.id}</th>
                   <td>{user.firstName}</td>
                   <td>{user.lastName}</td>

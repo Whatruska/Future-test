@@ -1,12 +1,11 @@
 import { UserTable } from './UserTable'
 import { connect, ConnectedProps } from 'react-redux'
 import React, { useEffect, useState } from 'react'
-import { withRouter } from 'react-router'
-import { ReduxState, SortingMode, User } from '../../types/types'
+import { FilteringConfig, ReduxState, SortingMode, User } from '../../types/types'
 import { fetchAllUsers } from '../../BLL/reducers/usersReducer'
 import { Preloader } from '../Preloader/Preloader'
-import { RouteComponentProps } from 'react-router-dom'
 import { CustomPagination } from '../Pagination/Pagination'
+import { Filtering } from '../Filtering/Filtering'
 
 export const TABLE_SIZE = 50.0
 
@@ -24,11 +23,7 @@ const sortListByMode = (a: User, b: User, sort: SortingMode): number => {
     return 1
   }
 }
-interface RouterProps {
- page: string
-}
-const UserTableContainer = (props: ConnectedProps<typeof connector> & RouteComponentProps<RouterProps>) => {
-  const page = props.match.params.page ? Number(props.match.params.page) : 1
+const UserTableContainer = (props: ConnectedProps<typeof connector>) => {
   useEffect(() => {
     if (!props.allUsers.length && !props.isFetching) props.fetchAllUsers()
   })
@@ -36,17 +31,32 @@ const UserTableContainer = (props: ConnectedProps<typeof connector> & RouteCompo
     key: 'id',
     direction: 'UP'
   })
-  const currList = props.allUsers.sort((a, b) => {
-    return sortListByMode(a, b, sort)
-  }).slice((page - 1) * TABLE_SIZE, page * TABLE_SIZE)
+  const [filter, setFilter] = useState<FilteringConfig>({
+    key: 'id',
+    substr: ''
+  })
+  const [page, setPage] = useState<number>(1)
+  const setFilt = (filt: any) => {
+    setFilter(filt)
+    setPage(1)
+  }
+  const currList = props.allUsers
+    .sort((a, b) => {
+      return sortListByMode(a, b, sort)
+    })
+    .filter(user => {
+      return filter.substr === '' || user[filter.key]?.toString().toLowerCase().includes(filter.substr)
+    })
+  const tableList = currList.slice((page - 1) * TABLE_SIZE, page * TABLE_SIZE)
   return (
     <>
       {props.isFetching
         ? <Preloader/>
         : <>
-          <CustomPagination list={props.allUsers} page={page}/>
-          <UserTable currList={currList} sort={sort} setSort={setSort}/>
-          <CustomPagination list={props.allUsers} page={page}/>
+          <Filtering setFilter={setFilt}/>
+          <CustomPagination list={currList} page={page} setPage={setPage}/>
+          <UserTable currList={tableList} sort={sort} setSort={setSort}/>
+          <CustomPagination list={currList} page={page} setPage={setPage}/>
         </>
       }
     </>
@@ -65,4 +75,4 @@ const mapDispatch = {
 
 const connector = connect(mapState, mapDispatch)
 
-export default withRouter(connector(UserTableContainer))
+export default (connector(UserTableContainer))
