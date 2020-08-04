@@ -8,7 +8,8 @@ const initialState: UsersReducerState = {
 
 const TOGGLE_FETCHING = 'USERS/TOGGLE_FETCHING'
 const SET_USERS = 'USERS/SET_USERS'
-type ALL_ACTIONS = typeof TOGGLE_FETCHING | typeof SET_USERS
+const ADD_USER = 'USERS/ADD_USER'
+type ALL_ACTIONS = typeof TOGGLE_FETCHING | typeof SET_USERS | typeof ADD_USER
 
 const usersReducer = (state = initialState, action: ValidAction<ALL_ACTIONS, any>): UsersReducerState => {
   const stateCopy: UsersReducerState = { ...state }
@@ -20,6 +21,11 @@ const usersReducer = (state = initialState, action: ValidAction<ALL_ACTIONS, any
     }
     case TOGGLE_FETCHING: {
       stateCopy.isFetching = !stateCopy.isFetching
+      break
+    }
+
+    case ADD_USER : {
+      stateCopy.allUsers.push(action.payload)
       break
     }
     default: {
@@ -42,6 +48,13 @@ const setAllUsers = (allUsers: Array<User>): ValidAction<typeof SET_USERS, Array
   }
 }
 
+const addNewUser = (user: User): ValidAction<typeof ADD_USER, User> => {
+  return {
+    type: ADD_USER,
+    payload: user
+  }
+}
+
 const fetchAllUsers = (): any => {
   return (dispatch: any) => {
     dispatch(toggleFetching())
@@ -57,4 +70,4 @@ const fetchAllUsers = (): any => {
   }
 }
 
-export { usersReducer, fetchAllUsers }
+export { usersReducer, fetchAllUsers, addNewUser }
