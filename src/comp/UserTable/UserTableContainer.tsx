@@ -1,13 +1,16 @@
 import { UserTable } from './UserTable'
 import { connect, ConnectedProps } from 'react-redux'
 import React, { useEffect, useState } from 'react'
-import { FilteringConfig, ReduxState, SortingMode, User } from '../../types/types'
+import { FetchingVolume, FilteringConfig, ReduxState, SortingMode, User } from '../../types/types'
 import { addNewUser, fetchAllUsers } from '../../BLL/reducers/usersReducer'
 import { Preloader } from '../Preloader/Preloader'
 import { CustomPagination } from '../Pagination/Pagination'
 import { Filtering } from '../Filtering/Filtering'
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap'
 import { AddUserForm } from '../AddUserForm/AddUserForm'
+import { Layout } from '../Layout/Layout'
+import classes from './UserTable.module.css'
+import { ChooseVolumeScreen } from '../ChooseVolumeScreen/ChooseVolumeScreen'
 
 export const TABLE_SIZE = 50.0
 
@@ -26,8 +29,9 @@ const sortListByMode = (a: User, b: User, sort: SortingMode): number => {
   }
 }
 const UserTableContainer = (props: ConnectedProps<typeof connector>) => {
+  const [volume, setVolume] = useState<FetchingVolume>()
   useEffect(() => {
-    if (!props.allUsers.length && !props.isFetching) props.fetchAllUsers()
+    if (!props.allUsers.length && !props.isFetching && volume !== undefined) props.fetchAllUsers(volume)
   })
   const [sort, setSort] = useState<SortingMode>({
     key: 'id',
@@ -47,7 +51,7 @@ const UserTableContainer = (props: ConnectedProps<typeof connector>) => {
       return sortListByMode(a, b, sort)
     })
     .filter(user => {
-      return filter.substr === '' || user[filter.key]?.toString().toLowerCase().includes(filter.substr)
+      return filter.substr === '' || user[filter.key]?.toString().toLowerCase().includes(filter.substr.toLowerCase())
     })
   const tableList = currList.slice((page - 1) * TABLE_SIZE, page * TABLE_SIZE)
   const [modal, setModal] = useState(false)
@@ -59,13 +63,18 @@ const UserTableContainer = (props: ConnectedProps<typeof connector>) => {
     toggleModal()
     props.addUser(user)
   }
+
   return (
-    <>
-      {props.isFetching
-        ? <Preloader/>
+    <Layout>
+      {!props.allUsers.length
+        ? props.isFetching
+          ? <Preloader/>
+          : <>
+            <ChooseVolumeScreen setVolume={setVolume}/>
+          </>
         : <>
           <Modal isOpen={modal} toggle={toggleModal}>
-            <ModalHeader toggle={toggleModal}>Modal title</ModalHeader>
+            <ModalHeader toggle={toggleModal}>Add user</ModalHeader>
             <ModalBody>
               <AddUserForm addUser={addUser}/>
             </ModalBody>
@@ -73,14 +82,22 @@ const UserTableContainer = (props: ConnectedProps<typeof connector>) => {
               <Button color="danger" onClick={toggleModal}>Cancel</Button>
             </ModalFooter>
           </Modal>
-          <Button color={'success'} onClick={toggleModal}>Add user</Button>
+          <div className={classes.btnWrapper}>
+            <Button color={'success'} onClick={toggleModal} className={classes.addBtn}>Add user</Button>
+          </div>
           <Filtering setFilter={setFilt}/>
-          <CustomPagination list={currList} page={page} setPage={setPage}/>
-          <UserTable currList={tableList} sort={sort} setSort={setSort}/>
-          <CustomPagination list={currList} page={page} setPage={setPage}/>
+          {
+            currList.length > 0
+              ? <>
+                <CustomPagination key={1} list={currList} page={page} setPage={setPage}/>
+                <UserTable currList={tableList} sort={sort} setSort={setSort}/>
+                <CustomPagination key={2} list={currList} page={page} setPage={setPage}/>
+              </>
+              : <h2><b>Try another search request</b></h2>
+          }
         </>
       }
-    </>
+    </Layout>
   )
 }
 
@@ -91,7 +108,7 @@ const mapState = (state: ReduxState) => {
   }
 }
 const mapDispatch = {
-  fetchAllUsers: () => (fetchAllUsers()),
+  fetchAllUsers: (volume: FetchingVolume) => (fetchAllUsers(volume)),
   addUser: (user: User) => (addNewUser(user))
 }
 

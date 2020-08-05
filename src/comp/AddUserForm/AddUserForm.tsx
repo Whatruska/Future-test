@@ -1,23 +1,24 @@
 import React, { FunctionComponent } from 'react'
 import * as Yup from 'yup'
 import { withFormik, FormikProps, Field } from 'formik'
-import { Form, FormGroup, Label } from 'reactstrap'
+import { Button, Form } from 'reactstrap'
 import { User } from '../../types/types'
+import { FormInput } from './FormInput/FormInput'
 const AddSchema = Yup.object().shape({
   id: Yup.number()
-    .required('Required'),
+    .required('Id is required'),
   firstName: Yup.string()
     .max(50, 'Too Long!')
-    .required('Required'),
+    .required('First name is required'),
   lastName: Yup.string()
-    .max(50, 'Too Long!')
-    .required('Required'),
+    .max(50, 'Last name is too long')
+    .required('Last name is required'),
   email: Yup.string()
     .email('Invalid email')
-    .required(),
+    .required('Email is required'),
   phone: Yup.string()
-    .max(12, 'Too Long!')
-    .required()
+    .max(12, 'Phone is too long')
+    .required('Phone is required')
 })
 
 interface Props {
@@ -25,7 +26,7 @@ interface Props {
 }
 export const AddUserForm: FunctionComponent<Props> = ({ addUser }) => {
     interface FormValues {
-        id: number,
+        id: string,
         firstName: string,
         lastName: string,
         email: string,
@@ -34,30 +35,26 @@ export const AddUserForm: FunctionComponent<Props> = ({ addUser }) => {
     }
 
     const InnerForm = (props: FormikProps<FormValues>) => {
-      const { touched, errors, isSubmitting, handleSubmit } = props
+      const { isSubmitting, handleSubmit, isValid } = props
+      const disabled = isSubmitting || !isValid
       return (
         <Form onSubmit={(e) => {
-            e.preventDefault()
-            handleSubmit()
+          e.preventDefault()
+          handleSubmit()
         }}>
-          <Field type="number" name="id" />
-          {touched.id && errors.id && <div>{errors.id}</div>}
+          <Field type="number" name="id" label={'ID'} id={'id'} component={FormInput}/>
 
-          <Field type="text" name="firstName" />
-          {touched.firstName && errors.firstName && <div>{errors.firstName}</div>}
+          <Field type="text" name="firstName" label={'First name'} id={'firstName'} component={FormInput}/>
 
-          <Field type="text" name="lastName" />
-          {touched.lastName && errors.lastName && <div>{errors.lastName}</div>}
+          <Field type="text" name="lastName" label={'Last name'} id={'lastName'} component={FormInput}/>
 
-          <Field type="email" name="email" />
-          {touched.email && errors.email && <div>{errors.email}</div>}
+          <Field type="email" name="email" label={'Email'} id={'email'} component={FormInput}/>
 
-          <Field type="phone" name="phone" />
-          {touched.phone && errors.phone && <div>{errors.phone}</div>}
+          <Field type="phone" name="phone" label={'Phone'} id={'phone'} component={FormInput}/>
 
-          <button disabled={isSubmitting}>
+          <Button color={disabled ? 'secondary' : 'success'} disabled={disabled}>
                     Submit
-          </button>
+          </Button>
         </Form>
       )
     }
@@ -66,7 +63,7 @@ export const AddUserForm: FunctionComponent<Props> = ({ addUser }) => {
       mapPropsToValues: props => {
         return {
           submit: props.addUser,
-          id: 1001,
+          id: '',
           firstName: '',
           lastName: '',
           email: '',
@@ -78,7 +75,7 @@ export const AddUserForm: FunctionComponent<Props> = ({ addUser }) => {
 
       handleSubmit: values => {
         values.submit({
-          id: values.id,
+          id: Number(values.id),
           firstName: values.firstName,
           lastName: values.lastName,
           email: values.email,

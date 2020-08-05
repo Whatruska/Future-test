@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react'
 import { User } from '../../types/types'
-import { Pagination, PaginationItem, PaginationLink } from 'reactstrap'
+import { Pagination, PaginationItem, PaginationLink, Row } from 'reactstrap'
 import { TABLE_SIZE } from '../UserTable/UserTableContainer'
 interface Props {
     list: Array<User>,
@@ -11,7 +11,7 @@ export const CustomPagination: FunctionComponent<Props> = ({ page, list, setPage
   const SIZE = Math.ceil(list.length / TABLE_SIZE)
   const renderLink = (page: number) => {
     return (
-      <PaginationItem onClick={() => setPage(page)}>
+      <PaginationItem key={page} onClick={() => setPage(page)}>
         <PaginationLink>
           {page}
         </PaginationLink>
@@ -39,34 +39,36 @@ export const CustomPagination: FunctionComponent<Props> = ({ page, list, setPage
     return (arr)
   }
   return (
-    <Pagination aria-label="Page navigation example">
-      <PaginationItem disabled={page === 1} onClick={() => {
-        if (page > 1) setPage(1)
-      }}>
-        <PaginationLink first disabled={page === 1}/>
-      </PaginationItem>
-      <PaginationItem disabled={page === 1} onClick={() => {
-        if (page > 1) setPage(page - 1)
-      }}>
-        <PaginationLink previous disabled={page === 1}/>
-      </PaginationItem>
-      {renderPrevLinks()}
-      <PaginationItem active>
-        <PaginationLink>
-          {page}
-        </PaginationLink>
-      </PaginationItem>
-      {renderNextLinks()}
-      <PaginationItem disabled={page === SIZE} onClick={() => {
-        if (page < SIZE) setPage(page + 1)
-      }}>
-        <PaginationLink next disabled={page === SIZE}/>
-      </PaginationItem>
-      <PaginationItem disabled={page === SIZE} onClick={() => {
-        if (page < SIZE) setPage(SIZE)
-      }}>
-        <PaginationLink last disabled={page === SIZE}/>
-      </PaginationItem>
-    </Pagination>
+    <Row style={{ justifyContent: 'center' }}>
+      <Pagination aria-label="Page navigation example">
+        <PaginationItem key={'first'} disabled={page === 1} onClick={() => {
+          if (page > 1) setPage(1)
+        }}>
+          <PaginationLink first disabled={page === 1}/>
+        </PaginationItem>
+        <PaginationItem key={'prev'} disabled={page === 1} onClick={() => {
+          if (page > 1) setPage(page - 1)
+        }}>
+          <PaginationLink previous disabled={page === 1}/>
+        </PaginationItem>
+        {renderPrevLinks()}
+        <PaginationItem active key={page}>
+          <PaginationLink>
+            {page}
+          </PaginationLink>
+        </PaginationItem>
+        {renderNextLinks()}
+        <PaginationItem key={'next'} disabled={page === SIZE} onClick={() => {
+          if (page < SIZE) setPage(page + 1)
+        }}>
+          <PaginationLink next disabled={page === SIZE}/>
+        </PaginationItem>
+        <PaginationItem key={'last'} disabled={page === SIZE} onClick={() => {
+          if (page < SIZE) setPage(SIZE)
+        }}>
+          <PaginationLink last disabled={page === SIZE}/>
+        </PaginationItem>
+      </Pagination>
+    </Row>
   )
 }

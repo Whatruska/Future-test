@@ -1,0 +1,50 @@
+.btnWrapper{
+    display: flex;
+    justify-content: center;
+    margin: 10px 0px;
+}
+
+.addBtn{
+    width: 100%;
+    text-transform: uppercase;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.selectedWrapper{
+
+}
+
+.selectedLine{
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin: 10px 0px;
+}
+
+.selectedLine h4{
+    margin: 0px 0px;
+    width: 15%;
+    margin-right: 10px;
+}
+
+.selectedLine div{
+    width: 85%;
+}
+
+.addressLine{
+    width: 100%;
+}
+
+.addressSubline{
+    margin: 10px 0px;
+    margin-left: 5%;
+    display: flex;
+    align-items: center;
+}
+
+.addressSubline h5{
+    width: 10%;
+    margin: 0px;
+    margin-right: 20px;
+}

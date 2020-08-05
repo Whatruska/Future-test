@@ -1,9 +1,11 @@
-import { User, UsersReducerState, ValidAction } from '../../types/types'
+import { FetchingMethods, FetchingVolume, User, UsersReducerState, ValidAction } from '../../types/types'
 import api from '../../DAL/api/api'
 
+const USERS_LOCALSTORAGE_KEY = 'FUTURE_TEST_APP/USERS'
+const CACHED_USERS = JSON.parse(window.localStorage.getItem(USERS_LOCALSTORAGE_KEY) as string)
 const initialState: UsersReducerState = {
   isFetching: false,
-  allUsers: []
+  allUsers: CACHED_USERS === null ? [] : CACHED_USERS
 }
 
 const TOGGLE_FETCHING = 'USERS/TOGGLE_FETCHING'
@@ -17,6 +19,7 @@ const usersReducer = (state = initialState, action: ValidAction<ALL_ACTIONS, any
   switch (action.type) {
     case SET_USERS: {
       stateCopy.allUsers = action.payload
+      window.localStorage.setItem(USERS_LOCALSTORAGE_KEY, JSON.stringify(action.payload))
       break
     }
     case TOGGLE_FETCHING: {
@@ -55,16 +58,27 @@ const addNewUser = (user: User): ValidAction<typeof ADD_USER, User> => {
   }
 }
 
-const fetchAllUsers = (): any => {
+const fetchAllUsers = (volume: FetchingVolume): any => {
+  let fetchMethod: FetchingMethods = api.getBigSet
+  switch (volume) {
+    case FetchingVolume.BIG: {
+      fetchMethod = api.getBigSet
+      break
+    }
+
+    case FetchingVolume.SMALL: {
+      fetchMethod = api.getSmallSet
+    }
+  }
   return (dispatch: any) => {
     dispatch(toggleFetching())
-    api.getBigSet()
+    fetchMethod()
       .then(array => {
         dispatch(setAllUsers(array))
         dispatch(toggleFetching())
       })
       .catch(err => {
-        console.log(err)
+        alert(err)
         dispatch(toggleFetching())
       })
   }

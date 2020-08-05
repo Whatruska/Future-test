@@ -1,4 +1,12 @@
 import { Action } from 'redux'
+import api from '../DAL/api/api'
+
+export type FetchingMethods = typeof api.getBigSet & typeof api.getSmallSet
+
+export enum FetchingVolume {
+    SMALL, BIG
+}
+
 export interface FilteringConfig {
     key: keyof User,
     substr: string
